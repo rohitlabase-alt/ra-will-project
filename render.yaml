@@ -1,0 +1,29 @@
+services:
+  # 1. Go Backend Service
+  - type: web
+    name: chainlock-backend
+    env: go
+    buildCommand: cd go-backend && go build -o main .
+    startCommand: cd go-backend && ./main
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: MONGODB_URI
+        sync: false
+      - key: DB_NAME
+        value: will_db
+      - key: PINATA_JWT
+        sync: false
+      - key: PINATA_GATEWAY
+        value: https://gateway.pinata.cloud
+
+  # 2. React Frontend Web App
+  - type: web
+    name: chainlock-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    publishPath: frontend/dist
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.pinata.cloud http://localhost:3001;"
